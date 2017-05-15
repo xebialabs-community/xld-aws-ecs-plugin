@@ -13,4 +13,5 @@ deploy:
   file: build/distributions/xld-aws-ecs-plugin-1.0.2.xldp
   skip_cleanup: true
   on:
+    tags: true
     repo: xebialabs-community/xld-aws-ecs-plugin
