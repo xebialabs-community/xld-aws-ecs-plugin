@@ -35,6 +35,8 @@
       <!--<property category="service" name="loadBalancers"         kind="list_of_ci" required="false" referenced-type="aws.ecsLoadBalancers" as-containment="true" /> -->
       <property category="service" name="serviceName"           kind="string"    required="true" />
       <property category="service" name="loadbalancerName"      kind="string"    required="true" />
+      <property category="service" name="loadbalancerRoleArn"   kind="string"    required="true" />
+      <property category="service" name="role"                  kind="string"    required="true" />
       <property category="service" name="placementConstraints"  kind="string"    required="false" />
       <property category="service" name="desiredCount"          kind="integer"   required="true"  default="0" />
       <property category="service" name="minimumHealthyPercent" kind="integer"   required="true"  default="50" />

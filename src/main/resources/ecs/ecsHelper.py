@@ -85,13 +85,15 @@ class ecsHelper(object):
    
    def createService(self, deployed, taskDefinition):
       oneLB = { 'loadBalancerName': deployed.loadbalancerName,
-                'containerPort': deployed.containerDefinitions[0].portMappings[0].containerPort}
+                'containerName':    deployed.containerDefinitions[0].name,
+                'containerPort':    deployed.containerDefinitions[0].portMappings[0].containerPort}
       print oneLB
       loadBalancers=[oneLB]
       response = self.ecs_client.create_service( cluster=deployed.container.name,
                                                  serviceName=deployed.serviceName,
                                                  taskDefinition=taskDefinition,
                                                  loadBalancers=loadBalancers,
+                                                 role=deployed.role,
                                                  desiredCount=deployed.desiredCount)
       return response
    

@@ -21,9 +21,9 @@ print "Maximum Percent    : %s" % (deployed.maximumPercent)
 print "LoadBalancer       : %s" % (deployed.loadbalancerName)
 
 oneLB = { 'loadBalancerName': deployed.loadbalancerName,
-          'containerPort': deployed.containerDefinitions[0].portMappings[0].containerPort}
+          'containerName':    deployed.containerDefinitions[0].name,
+          'containerPort':    deployed.containerDefinitions[0].portMappings[0].containerPort}
 print oneLB
-
 
 response = ecsHelper.createService(deployed, taskDefinition )
 print "========================================="
