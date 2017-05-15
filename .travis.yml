@@ -9,9 +9,7 @@ notifications:
 deploy:
   provider: releases
   api_key:
-    secure: MDy/R3WGvW3rGg9YEEBzGkZtKMK8EEwR/+xoX2ynXrEKGGiXEmCLeJ1i+X5v1N+Wn7y86t9zkwBtMRgWDbHOQMPRv+XcBpJXIKbS+KSkzKbDVEBk9m8Qh8XxhSDUWhjIBiVfUe4/jrEVHE9vIXGFoikLMf9IQyLgeOEkLDLs6ag=
-  file: xld-aws-ecs-plugin-1.0.2.xldp
-  skip_cleanup: true
+    secure: HQFgOChcuvZrOSplon+53HhWBnlF8rKjuZLw5GEbmoITHJFXXWfyVXyvAku1OUPgYVzaDy0j54US63IyYGkAkaBumtE8bRatihMFaoFyuiCaXw4GLxBve9iI3E7cnznrGofZHXLdJQ9X/0lFrcDjI0TYRvWju1ljMSio+ZYAWTNseNcI2iJg94jPwmKpRizkexqTXdmMLGX9qMA1+OgYG1LORZM9oKA2h45h93PcqKUdQB/31B4wbr6DG+wksUDd5eTtHLqduzeGJAgxLIdDDGT5MEeXILnWx0sh+HKYcMw0wEyoWBr0Yys54f5on1/2HHS/4jghilTCFolNLqt9oShDqkVL7c75wE7mtnp53uy3G6Wl3EQwsjBiA2/P81geGbJSBEw7oVmQ6Kqcjzza7zAUab1DIY5SFQ+96rtjRuAKTq0hO6Dnueal5cwDVIMoEYtKj5nnuiRJ/KwHiHyLSRbnIzh8nM2W7SPbrSEaNEhGEtUAMFB9hhsRFyxbTJMLO2rymLmDDAQodPRKeMIT9AtajF8stCLmNXjsrEHKjlH5K/j4X6YqhrnTIy0bc4wwTDNlMmjX4Wqi6OqAiMgbfCRlvtDCop2TiW+8WJMgtfWKsOOcb/b1ML7e2mDrGV/WQY11iGGMrzkaweNulIbGT7IVtjGsA/YlO59dFonO1n4=
+  file: build/distributions/xld-aws-ecs-plugin-1.0.2.xldp
   on:
-    tags: true
     repo: xebialabs-community/xld-aws-ecs-plugin
