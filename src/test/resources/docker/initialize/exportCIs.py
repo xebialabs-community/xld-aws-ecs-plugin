@@ -5,24 +5,16 @@
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-from ecs.ecsHelper import ecsHelper
+import zipfile
+import os
 
-print "Delete ECS Service"
+print "exporting repository"
+zipFile = repository.exportCisAndWait('/', '/data')
 
-ecsHelper = ecsHelper(previousDeployed)
+print "unzip repository"
+zip_ref = zipfile.ZipFile(zipFile, 'r')
+zip_ref.extractall('/data/src/test/resources/docker/initialize/cis')
+zip_ref.close()
 
-taskDefinition = "%s:%s" % (previousDeployed.family, previousDeployed.revision)
-print "Task Definition    : %s" % (taskDefinition)
-print "Cluster            : %s" % (previousDeployed.container.name)
-print "Service Name       : %s" % (previousDeployed.serviceName)
-print "Number of Tasks    : %s" % (previousDeployed.desiredCount)
-print "Min Healthy Percent: %s" % (previousDeployed.minimumHealthyPercent)
-print "Maximum Percent    : %s" % (previousDeployed.maximumPercent)
-print "LoadBalancer       : %s" % (previousDeployed.loadbalancerName)
-
-response = ecsHelper.deleteService(previousDeployed, taskDefinition )
-print "========================================="
-print response
-print "========================================="
-
-print "Done ECS Service"
+print "remove export file"
+os.remove(zipFile)

@@ -30,20 +30,21 @@
                   <value>host</value>
                </enum-values>
       </property>
-      <property category="task" name="containerDefinitions" kind="set_of_ci" required="false" referenced-type="aws.ecsContainer"     as-containment="true" />
-      <property category="task" name="volumes"              kind="set_of_ci" required="false" referenced-type="aws.ecsVolume"        as-containment="true" />
-      <property category="service" name="loadBalancers"        kind="set_of_ci" required="false" referenced-type="aws.ecsLoadBalancers" as-containment="true" />
-      <property category="service" name="placementConstraints" kind="string"    required="false" />
-      <property category="service" name="desiredCount"          kind="integer"   required="true" default="0" />
-      <property category="service" name="minimumHealthyPercent" kind="integer"   required="true" default="50" />
-      <property category="service" name="maximumPercent"        kind="integer"   required="true" default="200" />
-      <property category="service" name="loadBalancers"         kind="set_of_ci" required="false" referenced-type="aws.ecsLoadBalancers" as-containment="true" />
+      <property category="task"    name="containerDefinitions"  kind="list_of_ci" required="false" referenced-type="aws.ecsContainer"     as-containment="true" />
+      <property category="task"    name="volumes"               kind="list_of_ci" required="false" referenced-type="aws.ecsVolume"        as-containment="true" />
+      <!--<property category="service" name="loadBalancers"         kind="list_of_ci" required="false" referenced-type="aws.ecsLoadBalancers" as-containment="true" /> -->
+      <property category="service" name="serviceName"           kind="string"    required="true" />
+      <property category="service" name="loadbalancerName"      kind="string"    required="true" />
+      <property category="service" name="placementConstraints"  kind="string"    required="false" />
+      <property category="service" name="desiredCount"          kind="integer"   required="true"  default="0" />
+      <property category="service" name="minimumHealthyPercent" kind="integer"   required="true"  default="50" />
+      <property category="service" name="maximumPercent"        kind="integer"   required="true"  default="200" />
    </type>
 
    <type-modification type="aws.ecsTaskSpec">
-      <property category="task" name="containerDefinitions" kind="list_of_ci"    required="false" referenced-type="aws.ecsContainerSpec"     as-containment="true" />
-      <property category="task" name="volumes"              kind="list_of_ci"    required="false" referenced-type="aws.ecsVolumeSpec"        as-containment="true" />
-      <property category="service" name="loadBalancers"        kind="list_of_ci"    required="false" referenced-type="aws.ecsLoadBalancersSpec" as-containment="true" />
+      <!-- <property category="service" name="loadBalancers"        kind="list_of_ci"    required="false" referenced-type="aws.ecsLoadBalancersSpec" as-containment="true" /> -->
+      <property category="task"    name="containerDefinitions" kind="list_of_ci"    required="false" referenced-type="aws.ecsContainerSpec"     as-containment="true" />
+      <property category="task"    name="volumes"              kind="list_of_ci"    required="false" referenced-type="aws.ecsVolumeSpec"        as-containment="true" />
    </type-modification>
 
    <type type="aws.ecsContainer" deployable-type="aws.ecsContainerSpec" container-type="aws.ecsTask" extends="udm.BaseEmbeddedDeployed" description="Container.">
@@ -53,8 +54,8 @@
       <property name="memory"            required="true"   kind="integer" default="128" />
       <property name="memoryReservation" required="false"  kind="integer"/>
       <property name="links"             required="false"  kind="set_of_string" />
-      <property name="portMappings"      required="false"  kind="set_of_ci" referenced-type="aws.ecsPort"       as-containment="true" />
-      <property name="MountPoint"        required="false"  kind="set_of_ci" referenced-type="aws.ecsMountPoint" as-containment="true" />
+      <property name="portMappings"      required="false"  kind="list_of_ci" referenced-type="aws.ecsPort"       as-containment="true" />
+      <property name="MountPoint"        required="false"  kind="list_of_ci" referenced-type="aws.ecsMountPoint" as-containment="true" />
       <property name="environment"       required="false"  kind="map_string_string" />
       <property name="essential"         required="true"   kind="string" default="true" />
       <property name="volumesFrom"       required="false"  kind="string" />
@@ -82,7 +83,7 @@
    <type type="aws.ecsVolume" deployable-type="aws.ecsVolumeSpec" extends="udm.BaseEmbeddedDeployed" container-type="aws.ecsTask" description="A volume.">
       <generate-deployable type="aws.ecsVolumeSpec" extends="udm.BaseEmbeddedDeployable" />
       <property name="host"       required="true" />
-      <property name="sourcePath" required="true" kind="set_of_string"/>
+      <property name="sourcePath" required="true" kind="list_of_string"/>
    </type>
 
    <type type="aws.ecsMountPoint" deployable-type="aws.ecsMountPointSpec" extends="udm.BaseEmbeddedDeployed" container-type="aws.ecsContainer" description="A volume.">
@@ -96,24 +97,12 @@
       <property name="AwsKeys"     kind="ci" referenced-type="aws.Cloud" as-containment="true" />
    </type>
 
-   <type type="aws.ecsService" deployable-type="aws.ecsServiceSpec" extends="udm.BaseDeployed" container-type="aws.ecsCluster" >
-      <generate-deployable type="aws.ecsServiceSpec" extends="udm.BaseDeployable" />
-      <property name="desiredCount"          kind="integer"   required="true" default="0" />
-      <property name="minimumHealthyPercent" kind="integer"   required="true" default="50" />
-      <property name="maximumPercent"        kind="integer"   required="true" default="200" />
-      <property name="loadBalancers"         kind="set_of_ci" required="false" referenced-type="aws.ecsLoadBalancers" as-containment="true" />
-      <property name="taskDefinition"        kind="set_of_ci" required="false" referenced-type="aws.ecsTask"          as-containment="true" />
-   </type>
-
-   <type-modification type="aws.ecsServiceSpec">
-      <property name="loadBalancers"  kind="set_of_ci"  required="false" referenced-type="aws.ecsLoadBalancersSpec" as-containment="true" />
-      <property name="taskDefinition" kind="set_of_ci"  required="false" referenced-type="aws.ecsTaskSpec"          as-containment="true" />
-   </type-modification>
-
+   <!--
    <type type="aws.ecsLoadBalancers" deployable-type="aws.ecsLoadBalancersSpec" extends="udm.BaseEmbeddedDeployed" container-type="aws.ecsService" >
       <generate-deployable type="aws.ecsLoadBalancersSpec" extends="udm.BaseEmbeddedDeployable" />
       <property name="loadBalancerName" required="true" kind="string" />
       <property name="containerPort"    required="true" kind="integer" />
    </type>
+   -->
 
 </synthetic>

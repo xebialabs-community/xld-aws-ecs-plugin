@@ -16,8 +16,8 @@ class ecsHelper(object):
       botocore_session.lazy_register_component('data_loader',
                                                lambda: commons.create_loader())
       
-      self.session = Session(aws_access_key_id=deployed.container.accesskey,
-                             aws_secret_access_key=deployed.container.accessSecret,
+      self.session = Session(aws_access_key_id=deployed.container.AwsKeys.accesskey,
+                             aws_secret_access_key=deployed.container.AwsKeys.accessSecret,
                              botocore_session=botocore_session)
       
       if hasattr(self.deployed, 'region') and self.deployed.region is not None:
@@ -28,8 +28,6 @@ class ecsHelper(object):
       containerDef = []
       for container in containderList:
          oneContainer = {}
-         #oneContainer['name'] = container.name.encode('ascii','ignore')
-         #oneContainer['image'] = container.image.encode('ascii','ignore')
          oneContainer['name'] = container.name
          oneContainer['image'] = container.image
          oneContainer['memory'] = container.memory
@@ -83,3 +81,27 @@ class ecsHelper(object):
       taskDef = "%s:%s" % ( deployed.family, deployed.revision )
       response = self.ecs_client.deregister_task_definition( taskDefinition=taskDef )
       return response
+   
+   
+   def createService(self, deployed, taskDefinition):
+      oneLB = { 'loadBalancerName': deployed.loadbalancerName,
+                'containerPort': deployed.containerDefinitions[0].portMappings[0].containerPort}
+      print oneLB
+      loadBalancers=[oneLB]
+      response = self.ecs_client.create_service( cluster=deployed.container.name,
+                                                 serviceName=deployed.serviceName,
+                                                 taskDefinition=taskDefinition,
+                                                 loadBalancers=loadBalancers,
+                                                 desiredCount=deployed.desiredCount)
+      return response
+   
+   def deleteService(self, previousDeployed, taskDefinition):
+      response = self.ecs_client.update_service( cluster=previousDeployed.container.name,
+                                                 service=previousDeployed.serviceName,
+                                                 desiredCount=0,
+                                                 taskDefinition=taskDefinition)
+      print response
+      response = self.ecs_client.delete_service( cluster=previousDeployed.container.name,
+                                                 service=previousDeployed.serviceName )
+      return response
+   

@@ -9,6 +9,25 @@ from ecs.ecsHelper import ecsHelper
 
 print "Create ECS Service"
 
-print "Revision %s" % (deployed.revision)
+ecsHelper = ecsHelper(deployed)
+
+taskDefinition = "%s:%s" % (deployed.family, deployed.revision)
+print "Task Definition    : %s" % (taskDefinition)
+print "Cluster            : %s" % (deployed.container.name)
+print "Service Name       : %s" % (deployed.serviceName)
+print "Number of Tasks    : %s" % (deployed.desiredCount)
+print "Min Healthy Percent: %s" % (deployed.minimumHealthyPercent)
+print "Maximum Percent    : %s" % (deployed.maximumPercent)
+print "LoadBalancer       : %s" % (deployed.loadbalancerName)
+
+oneLB = { 'loadBalancerName': deployed.loadbalancerName,
+          'containerPort': deployed.containerDefinitions[0].portMappings[0].containerPort}
+print oneLB
+
+
+response = ecsHelper.createService(deployed, taskDefinition )
+print "========================================="
+print response
+print "========================================="
 print "Done ECS Service"
 
