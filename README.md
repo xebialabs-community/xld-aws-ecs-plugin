@@ -1,15 +1,14 @@
-[![Build Status](https://travis-ci.org/xebialabs-community/xld-aws-ecs-plugin.svg?branch=master)](https://travis-ci.org/xebialabs-community/xld-aws-ecs-plugin)
-[![Code Climate](https://codeclimate.com/github/xebialabs-community/xld-aws-ecs-plugin/badges/gpa.svg)](https://codeclimate.com/github/xebialabs-community/xld-aws-ecs-plugin)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/3a7583eb61ac4145a0255b0d6d39b510)](https://www.codacy.com/app/zvercodebender/xld-aws-ecs-plugin?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=xebialabs-community/xld-aws-ecs-plugin&amp;utm_campaign=Badge_Grade)
-
 # Preface #
 
-This document describes the functionality provided by the XLD AWS Lambda plugin.
+This document describes the functionality provided by the XLD AWS ECS plugin.
 
 See the **XL Deploy Reference Manual** for background information on XL Deploy and deployment concepts.
 
 # CI status #
 
+[![Build Status](https://travis-ci.org/xebialabs-community/xld-aws-ecs-plugin.svg?branch=master)](https://travis-ci.org/xebialabs-community/xld-aws-ecs-plugin)
+[![Code Climate](https://codeclimate.com/github/xebialabs-community/xld-aws-ecs-plugin/badges/gpa.svg)](https://codeclimate.com/github/xebialabs-community/xld-aws-ecs-plugin)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/3a7583eb61ac4145a0255b0d6d39b510)](https://www.codacy.com/app/zvercodebender/xld-aws-ecs-plugin?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=xebialabs-community/xld-aws-ecs-plugin&amp;utm_campaign=Badge_Grade)
 
 # Overview #
 
