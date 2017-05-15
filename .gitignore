@@ -1,0 +1,7 @@
+.gradle
+.idea
+.idea/*
+build
+supervisord.*
+src/downloads/*
+key*
