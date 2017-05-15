@@ -1,3 +1,5 @@
+[![Code Climate](https://codeclimate.com/github/xebialabs-community/xld-aws-ecs-plugin/badges/gpa.svg)](https://codeclimate.com/github/xebialabs-community/xld-aws-ecs-plugin)
+
 # Preface #
 
 This document describes the functionality provided by the XLD AWS Lambda plugin.
@@ -9,7 +11,8 @@ See the **XL Deploy Reference Manual** for background information on XL Deploy a
 
 # Overview #
 
-This XLD AWS Lambda plugin the management of AWS Lambda functions via XL Deploy
+This XLD AWS ECS plugin the management of AWS ESC container services
+ via XL Deploy
 
 # Requirements #
 
@@ -26,7 +29,9 @@ Place the plugin xldp file into your `SERVER_HOME/plugins` directory.
 
 
 # References #
-+ [AWS Lambda API Reference](http://docs.aws.amazon.com/lambda/latest/dg/API_Reference.html)
-+ [AWS Lambda End Points](http://docs.aws.amazon.com/general/latest/gr/rande.html#lambda_region)
-+  [Boto 3 Lambda Docs](http://boto3.readthedocs.io/en/latest/reference/services/lambda.html#Lambda.Client.create_function)
-+  
++ [AWS Register Task Definition API Reference](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RegisterTaskDefinition.html)
++ [AWS CreateService API Reference](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateService.html)
++ [AWS Create Cluster API Reference](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateCluster.html)
++ [AWS Creating a Service](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/create-service.html)
++  [Boto 3 ECS Docs](http://boto3.readthedocs.io/en/latest/reference/services/ecs.html)
+
