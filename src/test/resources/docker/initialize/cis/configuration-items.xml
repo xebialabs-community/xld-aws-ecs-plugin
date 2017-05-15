@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xl:export xmlns:xl="http://www.xebialabs.com/xl-export">
+  <xl:metadata>
+    <xl:exported-by>admin</xl:exported-by>
+    <xl:exported-at>2017-05-15T15:21:56.485+0000</xl:exported-at>
+    <xl:exported-format-version>6.2.1</xl:exported-format-version>
+    <xl:encryption-key-fingerprint>f6094d333c0736339884d1fe38d9c54e14019ac9</xl:encryption-key-fingerprint>
+  </xl:metadata>
+  <xl:exported-configuration-items exported-root-id="/">
+    <udm.DeploymentPackage id="Applications/app/1.0" created-by="admin" created-at="2017-05-15T15:10:17.272+0000" last-modified-by="admin" last-modified-at="2017-05-15T15:10:17.272+0000">
+      <orchestrator />
+      <applicationDependencies />
+      <dependencyResolution>LATEST</dependencyResolution>
+      <undeployDependencies>false</undeployDependencies>
+    </udm.DeploymentPackage>
+    <aws.ecsPortSpec id="Applications/app/1.0/myTask/mystuff/8080" created-by="admin" created-at="2017-05-15T15:10:17.279+0000" last-modified-by="admin" last-modified-at="2017-05-15T15:10:17.279+0000">
+      <hostPort>80</hostPort>
+      <containerPort>8080</containerPort>
+    </aws.ecsPortSpec>
+    <udm.Environment id="Environments/AWS" created-by="admin" created-at="2017-05-15T15:10:17.266+0000" last-modified-by="admin" last-modified-at="2017-05-15T15:10:17.266+0000">
+      <members>
+        <ci ref="Infrastructure/AWS/rrb-dev" />
+      </members>
+      <dictionaries />
+      <triggers />
+    </udm.Environment>
+    <aws.Cloud id="Infrastructure/AWS" created-by="admin" created-at="2017-05-15T15:10:17.269+0000" last-modified-by="admin" last-modified-at="2017-05-15T15:10:18.393+0000">
+      <tags />
+      <accesskey>XXX</accesskey>
+      <accessSecret>XXX</accessSecret>
+    </aws.Cloud>
+    <udm.Application id="Applications/app" created-by="admin" created-at="2017-05-15T15:10:17.270+0000" last-modified-by="admin" last-modified-at="2017-05-15T15:10:17.270+0000">
+      <lastVersion>1.0</lastVersion>
+    </udm.Application>
+    <aws.ecsTaskSpec id="Applications/app/1.0/myTask" created-by="admin" created-at="2017-05-15T15:10:17.275+0000" last-modified-by="admin" last-modified-at="2017-05-15T15:10:36.534+0000">
+      <tags />
+      <family>myStuff</family>
+      <revision>1</revision>
+      <region>us-east-2</region>
+      <taskRoleArn />
+      <networkMode>bridge</networkMode>
+      <serviceName>myService</serviceName>
+      <loadbalancerName>rrb-Ohio-LB</loadbalancerName>
+      <loadbalancerRoleArn>arn:aws:iam::932770550094:role/ecsServiceRole</loadbalancerRoleArn>
+      <role>ecsServiceRole</role>
+      <desiredCount>1</desiredCount>
+      <minimumHealthyPercent />
+      <containerDefinitions>
+        <ci ref="Applications/app/1.0/myTask/mystuff" />
+      </containerDefinitions>
+      <volumes />
+    </aws.ecsTaskSpec>
+    <aws.ecsContainerSpec id="Applications/app/1.0/myTask/mystuff" created-by="admin" created-at="2017-05-15T15:10:17.277+0000" last-modified-by="admin" last-modified-at="2017-05-15T15:10:17.277+0000">
+      <image>rbroker/mystuff:1.3</image>
+      <memory>128</memory>
+      <links />
+      <environment />
+      <portMappings>
+        <ci ref="Applications/app/1.0/myTask/mystuff/8080" />
+      </portMappings>
+      <MountPoint />
+    </aws.ecsContainerSpec>
+    <aws.ecsCluster id="Infrastructure/AWS/rrb-dev" created-by="admin" created-at="2017-05-15T15:10:17.273+0000" last-modified-by="admin" last-modified-at="2017-05-15T15:10:17.273+0000">
+      <tags />
+    </aws.ecsCluster>
+  </xl:exported-configuration-items>
+</xl:export>
