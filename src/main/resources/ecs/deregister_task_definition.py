@@ -7,7 +7,7 @@
 
 from ecs.ecsHelper import ecsHelper
 
-print "Delete ECS Tasks"
+print "deregister_task_definition...."
 
 ecsHelper = ecsHelper(previousDeployed)
 response = ecsHelper.deregister_task_definition()

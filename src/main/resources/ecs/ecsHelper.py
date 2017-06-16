@@ -88,25 +88,28 @@ class ecsHelper(object):
     def run_task(self):
         response = self.ecs_client.run_task(cluster=self.cluster(),
                                             taskDefinition=self.task_definition(),
-                                            count=self.taskCount,
+                                            count=self.deployed.taskCount,
                                             )
-        if 'failures' in response:
+        if len(response['failures']) > 0:
             print "Error(s) found"
             for failure in response['failures']:
                 print "{arn} => {reason}".format(**failure)
                 raise Exception('ERROR run task %s' % (self.task_definition()))
 
+        task_ids = []
         for task in response['tasks']:
             print "{taskArn}  {lastStatus} -> {desiredStatus}".format(**task)
-            taskId = task['taskArn'].split('task:')[0]
-            print taskId
-            self.deployed.taskIds.append(taskId)
+            task_ids.append(task['taskArn'])
 
+        self.deployed.taskIds = task_ids
         print self.deployed.taskIds
 
         return response
 
     def stop_task(self):
+        if len(self.deployed.taskIds) == 0:
+            raise Exception('No taskIds found in the deployed ')
+
         for task in self.deployed.taskIds:
             print "stop {0} from {1}".format(task, self.cluster())
             self.ecs_client.stop_task(cluster=self.cluster(),

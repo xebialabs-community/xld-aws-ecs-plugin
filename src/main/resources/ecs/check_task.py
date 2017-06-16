@@ -8,9 +8,8 @@
 from ecs.ecsHelper import ecsHelper
 
 target_deployed = deployed or previousDeployed
-print "Run Task ECS Task {0}".format(target_deployed.name)
+print "Check ECS Task {0}".format(target_deployed.name)
 
-#target_deployed.taskIds = ['c40b0bfd-499c-461b-9cb9-27a258fab0f1']
 ecsHelper = ecsHelper(target_deployed)
 
 desired_tasks, nb_tasks = ecsHelper.check_for_tasks_get_desired_status()

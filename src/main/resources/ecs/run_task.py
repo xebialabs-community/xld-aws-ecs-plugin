@@ -11,6 +11,7 @@ print "Run Task ECS Task {0}".format(deployed.name)
 
 ecsHelper = ecsHelper(deployed)
 
+print "Start %s tasks........ " % deployed.taskCount
 
 response = ecsHelper.run_task()
 print "====================="
