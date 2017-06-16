@@ -54,7 +54,7 @@
             </jython>
             <jython>
                 <order>40</order>
-                <description expression="true">"DeregisterTask Definition %s from %s" % (previousDeployed.name, previousDeployed.container.name)</description>
+                <description expression="true">"Deregister Task Definition %s from %s" % (previousDeployed.name, previousDeployed.container.name)</description>
                 <script>ecs/deregister_task_definition.py</script>
             </jython>
 
