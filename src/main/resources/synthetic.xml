@@ -19,6 +19,7 @@
         <generate-deployable type="aws.ecsTaskSpec"
                              extends="udm.BaseDeployable"
                              description="Specification for an AWS Task."/>
+        <property category="Task" name="taskCount" kind="integer" required="true" default="1"/>
         <property category="Task" name="family" kind="string" required="true"/>
         <property category="Task" name="revision" kind="string" required="false"/>
         <property category="Task" name="region" kind="string" required="true"/>

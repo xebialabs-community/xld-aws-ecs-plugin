@@ -88,7 +88,7 @@ class ecsHelper(object):
     def run_task(self):
         response = self.ecs_client.run_task(cluster=self.cluster(),
                                             taskDefinition=self.task_definition(),
-                                            count=1,
+                                            count=self.taskCount,
                                             )
         if 'failures' in response:
             print "Error(s) found"
