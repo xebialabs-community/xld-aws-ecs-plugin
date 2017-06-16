@@ -24,57 +24,56 @@ class ecsHelper(object):
         if hasattr(self.deployed, 'region') and self.deployed.region is not None:
             self.ecs_client = self.session.client('ecs', region_name=self.deployed.region, use_ssl=True, verify=False)
 
-    def parseContainers(self):
-        containerDef = []
+    def ecs_containers(self):
+        ecs_containers = []
         for container in self.deployed.containerDefinitions:
-            oneContainer = {}
-            oneContainer['name'] = container.name
-            oneContainer['image'] = container.image
-            oneContainer['memory'] = container.memory
+            ecs_container = {}
+            ecs_container['name'] = container.name
+            ecs_container['image'] = container.image
+            ecs_container['memory'] = container.memory
             if container.essential == "true":
-                oneContainer['essential'] = True
+                ecs_container['essential'] = True
             else:
-                oneContainer['essential'] = False
+                ecs_container['essential'] = False
 
-            oneContainer['environment'] = []
+            ecs_container['environment'] = []
             for key in container.environment:
                 entry = {}
                 value = container.environment[key]
                 entry['name'] = key
                 entry['value'] = value
-                oneContainer['environment'].append(entry)
+                ecs_container['environment'].append(entry)
 
-            # oneContainer['volumesFrom'] = container.volumesFrom
-            # oneContainer['hostname'] = container.hostname
-            # oneContainer['user'] = container.user
-            # oneContainer['workingDirectory'] = container.workingDirectory
-            # oneContainer['extraHosts'] = container.extraHosts
-            # oneContainer['logConfiguration'] = container.logConfiguration
-            # oneContainer['ulimits'] = container.ulimits
-            # oneContainer['dockerLabels'] = container.dockerLabels
-            portMappings = []
+            # ecs_container['volumesFrom'] = container.volumesFrom
+            # ecs_container['hostname'] = container.hostname
+            # ecs_container['user'] = container.user
+            # ecs_container['workingDirectory'] = container.workingDirectory
+            # ecs_container['extraHosts'] = container.extraHosts
+            # ecs_container['logConfiguration'] = container.logConfiguration
+            # ecs_container['ulimits'] = container.ulimits
+            # ecs_container['dockerLabels'] = container.dockerLabels
+            port_mappings = []
             for port in container.portMappings:
-                portMappings.append(
+                port_mappings.append(
                     {'containerPort': port.containerPort, 'hostPort': port.hostPort, 'protocol': port.protocol})
-            # End
-            if len(portMappings) > 0:
-                oneContainer['portMappings'] = portMappings
-            # End
-            MountPoint = []
+
+            if len(port_mappings) > 0:
+                ecs_container['port_mappings'] = port_mappings
+
+            mount_point = []
             for mount in container.MountPoint:
-                MountPoint.append({'sourceVolume': mount.sourceVolume, 'containerPath': mount.containerPath,
-                                   'readOnly': mount.readOnly})
-            # End
-            if len(MountPoint) > 0:
-                oneContainer['MountPoint'] = MountPoint
-            # End
-            # containerDef.append( json.dumps(oneContainer) )
-            containerDef.append(oneContainer)
-        # End
-        return containerDef
+                mount_point.append({'sourceVolume': mount.sourceVolume, 'containerPath': mount.containerPath,
+                                    'readOnly': mount.readOnly})
+
+            if len(mount_point) > 0:
+                ecs_container['mount_point'] = mount_point
+
+            ecs_containers.append(ecs_container)
+
+        return ecs_containers
 
     def register_task_definition(self):
-        container_definitions = self.parseContainers()
+        container_definitions = self.ecs_containers()
         response = self.ecs_client.register_task_definition(family=self.deployed.family,
                                                             networkMode=self.deployed.networkMode,
                                                             taskRoleArn=self.deployed.taskRoleArn,
