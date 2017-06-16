@@ -7,11 +7,6 @@
 
 from ecs.ecsHelper import ecsHelper
 
-print "Delete ECS Tasks"
-
-ecsHelper = ecsHelper( previousDeployed )
-response = ecsHelper.deleteTask( previousDeployed )
-print "====================="
-print response
-
-print "Done ECS Tasks"
+print "Stop Task ECS Task {0}".format(previousDeployed.name)
+ecsHelper = ecsHelper(previousDeployed)
+ecsHelper.stop_task()

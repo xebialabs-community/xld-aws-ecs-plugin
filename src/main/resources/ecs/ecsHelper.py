@@ -6,104 +6,157 @@
 #
 
 import commons
-from botocore.session import Session as BotocoreSession
 from boto3.session import Session
+from botocore.session import Session as BotocoreSession
+
 
 class ecsHelper(object):
-   def __init__(self, deployed):
-      self.deployed = deployed
-      botocore_session = BotocoreSession()
-      botocore_session.lazy_register_component('data_loader',
-                                               lambda: commons.create_loader())
-      
-      self.session = Session(aws_access_key_id=deployed.container.AwsKeys.accesskey,
-                             aws_secret_access_key=deployed.container.AwsKeys.accessSecret,
-                             botocore_session=botocore_session)
-      
-      if hasattr(self.deployed, 'region') and self.deployed.region is not None:
-         self.ecs_client = self.session.client('ecs', region_name=self.deployed.region, use_ssl=True, verify=False)
-         
-   def parseContainers(self, containderList):
-      import json
-      containerDef = []
-      for container in containderList:
-         oneContainer = {}
-         oneContainer['name'] = container.name
-         oneContainer['image'] = container.image
-         oneContainer['memory'] = container.memory
-         if container.essential == "true":
-            oneContainer['essential'] = True
-         else:
-            oneContainer['essential'] = False
-         if len(container.environment) < 1:
+    def __init__(self, deployed):
+        self.deployed = deployed
+        botocore_session = BotocoreSession()
+        botocore_session.lazy_register_component('data_loader',
+                                                 lambda: commons.create_loader())
+
+        self.session = Session(aws_access_key_id=deployed.container.AwsKeys.accesskey,
+                               aws_secret_access_key=deployed.container.AwsKeys.accessSecret,
+                               botocore_session=botocore_session)
+
+        if hasattr(self.deployed, 'region') and self.deployed.region is not None:
+            self.ecs_client = self.session.client('ecs', region_name=self.deployed.region, use_ssl=True, verify=False)
+
+    def parseContainers(self):
+        containerDef = []
+        for container in self.deployed.containerDefinitions:
+            oneContainer = {}
+            oneContainer['name'] = container.name
+            oneContainer['image'] = container.image
+            oneContainer['memory'] = container.memory
+            if container.essential == "true":
+                oneContainer['essential'] = True
+            else:
+                oneContainer['essential'] = False
+
             oneContainer['environment'] = []
-         else:
-            oneContainer['environment'] = container.environment
-         #oneContainer['volumesFrom'] = container.volumesFrom
-         #oneContainer['hostname'] = container.hostname
-         #oneContainer['user'] = container.user
-         #oneContainer['workingDirectory'] = container.workingDirectory
-         #oneContainer['extraHosts'] = container.extraHosts
-         #oneContainer['logConfiguration'] = container.logConfiguration
-         #oneContainer['ulimits'] = container.ulimits
-         #oneContainer['dockerLabels'] = container.dockerLabels
-         portMappings = []
-         for port in container.portMappings:
-            portMappings.append( {'containerPort': port.containerPort, 'hostPort': port.hostPort, 'protocol': port.protocol} )
-         # End
-         if len(portMappings) > 0:
-            oneContainer['portMappings'] = portMappings
-         # End
-         MountPoint = []
-         for mount in container.MountPoint:
-            MountPoint.append( {'sourceVolume': mount.sourceVolume, 'containerPath': mount.containerPath, 'readOnly': mount.readOnly} )
-         # End
-         if len(MountPoint) > 0:
-            oneContainer['MountPoint'] = MountPoint
-         # End
-         #containerDef.append( json.dumps(oneContainer) )
-         containerDef.append( oneContainer )
-      # End
-      return containerDef
-   
-   
-   def createTask(self, deployed, containerDefinitions ):
-      response = self.ecs_client.register_task_definition( family=deployed.family,
-                                                           networkMode=deployed.networkMode,
-                                                           taskRoleArn=deployed.taskRoleArn,
-                                                           placementConstraints=deployed.placementConstraints,
-                                                           volumes=deployed.volumes,
-                                                           containerDefinitions=containerDefinitions)
-      return response
-   
-   
-   def deleteTask(self, deployed ):
-      taskDef = "%s:%s" % ( deployed.family, deployed.revision )
-      response = self.ecs_client.deregister_task_definition( taskDefinition=taskDef )
-      return response
-   
-   
-   def createService(self, deployed, taskDefinition):
-      oneLB = { 'loadBalancerName': deployed.loadbalancerName,
-                'containerName':    deployed.containerDefinitions[0].name,
-                'containerPort':    deployed.containerDefinitions[0].portMappings[0].containerPort}
-      print oneLB
-      loadBalancers=[oneLB]
-      response = self.ecs_client.create_service( cluster=deployed.container.name,
-                                                 serviceName=deployed.serviceName,
-                                                 taskDefinition=taskDefinition,
-                                                 loadBalancers=loadBalancers,
-                                                 role=deployed.role,
-                                                 desiredCount=deployed.desiredCount)
-      return response
-   
-   def deleteService(self, previousDeployed, taskDefinition):
-      response = self.ecs_client.update_service( cluster=previousDeployed.container.name,
-                                                 service=previousDeployed.serviceName,
-                                                 desiredCount=0,
-                                                 taskDefinition=taskDefinition)
-      print response
-      response = self.ecs_client.delete_service( cluster=previousDeployed.container.name,
-                                                 service=previousDeployed.serviceName )
-      return response
-   
+            for key in container.environment:
+                entry = {}
+                value = container.environment[key]
+                entry['name'] = key
+                entry['value'] = value
+                oneContainer['environment'].append(entry)
+
+            # oneContainer['volumesFrom'] = container.volumesFrom
+            # oneContainer['hostname'] = container.hostname
+            # oneContainer['user'] = container.user
+            # oneContainer['workingDirectory'] = container.workingDirectory
+            # oneContainer['extraHosts'] = container.extraHosts
+            # oneContainer['logConfiguration'] = container.logConfiguration
+            # oneContainer['ulimits'] = container.ulimits
+            # oneContainer['dockerLabels'] = container.dockerLabels
+            portMappings = []
+            for port in container.portMappings:
+                portMappings.append(
+                    {'containerPort': port.containerPort, 'hostPort': port.hostPort, 'protocol': port.protocol})
+            # End
+            if len(portMappings) > 0:
+                oneContainer['portMappings'] = portMappings
+            # End
+            MountPoint = []
+            for mount in container.MountPoint:
+                MountPoint.append({'sourceVolume': mount.sourceVolume, 'containerPath': mount.containerPath,
+                                   'readOnly': mount.readOnly})
+            # End
+            if len(MountPoint) > 0:
+                oneContainer['MountPoint'] = MountPoint
+            # End
+            # containerDef.append( json.dumps(oneContainer) )
+            containerDef.append(oneContainer)
+        # End
+        return containerDef
+
+    def register_task_definition(self):
+        container_definitions = self.parseContainers()
+        response = self.ecs_client.register_task_definition(family=self.deployed.family,
+                                                            networkMode=self.deployed.networkMode,
+                                                            taskRoleArn=self.deployed.taskRoleArn,
+                                                            placementConstraints=self.deployed.placementConstraints,
+                                                            volumes=self.deployed.volumes,
+                                                            containerDefinitions=container_definitions)
+
+        self.deployed.revision = response['taskDefinition']['revision']
+        return response
+
+    def run_task(self):
+        response = self.ecs_client.run_task(cluster=self.cluster(),
+                                            taskDefinition=self.task_definition(),
+                                            count=1,
+                                            )
+        if 'failures' in response:
+            print "Error(s) found"
+            for failure in response['failures']:
+                print "{arn} => {reason}".format(**failure)
+                raise Exception('ERROR run task %s' % (self.task_definition()))
+
+        for task in response['tasks']:
+            print "{taskArn}  {lastStatus} -> {desiredStatus}".format(**task)
+            taskId = task['taskArn'].split('task:')[0]
+            print taskId
+            self.deployed.taskIds.append(taskId)
+
+        print self.deployed.taskIds
+
+        return response
+
+    def stop_task(self):
+        for task in self.deployed.taskIds:
+            print "stop {0} from {1}".format(task, self.cluster())
+            self.ecs_client.stop_task(cluster=self.cluster(),
+                                      task=task,
+                                      reason="XL DEPLOY",
+                                      )
+
+    def check_for_tasks_get_desired_status(self):
+        nb_tasks = len(self.deployed.taskIds)
+        response = self.ecs_client.describe_tasks(cluster=self.cluster(),
+                                                  tasks=self.deployed.taskIds)
+        desired_tasks = 0
+        for task in response['tasks']:
+            print "{taskArn}/{lastStatus}/{desiredStatus}".format(**task)
+            if task['lastStatus'] == task['desiredStatus']:
+                desired_tasks = desired_tasks + 1
+
+        return desired_tasks, nb_tasks
+
+    def deregister_task_definition(self):
+        response = self.ecs_client.deregister_task_definition(taskDefinition=self.task_definition())
+        return response
+
+    def task_definition(self):
+        return "{0}:{1}".format(self.deployed.family, self.deployed.revision)
+
+    def cluster(self):
+        return self.deployed.container.name
+
+    def createService(self, deployed, taskDefinition, container_name, container_port):
+        oneLB = {'loadBalancerName': deployed.loadbalancerName,
+                 'containerName': container_name,
+                 'containerPort': container_port}
+
+        print oneLB
+        loadBalancers = [oneLB]
+        response = self.ecs_client.create_service(cluster=deployed.container.name,
+                                                  serviceName=deployed.serviceName,
+                                                  taskDefinition=taskDefinition,
+                                                  loadBalancers=loadBalancers,
+                                                  role=deployed.role,
+                                                  desiredCount=deployed.desiredCount)
+        return response
+
+    def deleteService(self, previousDeployed, taskDefinition):
+        response = self.ecs_client.update_service(cluster=previousDeployed.container.name,
+                                                  service=previousDeployed.serviceName,
+                                                  desiredCount=0,
+                                                  taskDefinition=taskDefinition)
+        print response
+        response = self.ecs_client.delete_service(cluster=previousDeployed.container.name,
+                                                  service=previousDeployed.serviceName)
+        return response

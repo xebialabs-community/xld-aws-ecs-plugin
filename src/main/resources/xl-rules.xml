@@ -8,68 +8,88 @@
 
 <rules xmlns="http://www.xebialabs.com/xl-deploy/xl-rules">
 
-<!--
-#########################################################
-#   Task Container Rules
--->
-<rule name="aws.ecsTask.CREATE" scope="deployed">
-   <conditions>
-      <type>aws.ecsTask</type>
-      <operation>CREATE</operation>
-      <operation>MODIFY</operation>
-   </conditions>
-   <steps>
-      <jython>
-         <order>60</order>
-         <description expression="true">"Creating Task Container %s on %s" % (deployed.name, deployed.container.name)</description>
-         <script>ecs/createTask.py</script>
-      </jython>
-      <checkpoint/>
-   </steps>
-</rule>
-<rule name="aws.ecsTask.DESTROY" scope="deployed">
-   <conditions>
-      <type>aws.ecsTask</type>
-      <operation>DESTROY</operation>
-      <operation>MODIFY</operation>
-   </conditions>
-   <steps>
-      <jython>
-         <order>50</order>
-         <description expression="true">"Removing Task Container %s from %s" % (previousDeployed.name, previousDeployed.container.name)</description>
-         <script>ecs/deleteTask.py</script>
-      </jython>
-      <checkpoint/>
-   </steps>
-</rule>
-<rule name="aws.ecsService.CREATE" scope="deployed">
-      <conditions>
-         <type>aws.ecsTask</type>
-         <operation>CREATE</operation>
-         <operation>MODIFY</operation>
-      </conditions>
-      <steps>
-         <jython>
-            <order>65</order>
-            <description expression="true">"Creating Service %s on %s" % (deployed.name, deployed.container.name)</description>
-            <script>ecs/createService.py</script>
-         </jython>
-         <checkpoint/>
-      </steps>
-</rule>
-<rule name="aws.ecsService.DESTROY" scope="deployed">
-      <conditions>
-         <type>aws.ecsTask</type>
-         <operation>DESTROY</operation>
-         <operation>MODIFY</operation>
-      </conditions>
-      <steps>
-         <jython>
-            <order>45</order>
-            <description expression="true">"Removing Service %s from %s" % (previousDeployed.name, previousDeployed.container.name)</description>
-            <script>ecs/deleteService.py</script>
-         </jython>
-         <checkpoint/>
-      </steps>
-</rule>
+    <rule name="aws.ecsTask.CREATE" scope="deployed">
+        <conditions>
+            <type>aws.ecsTask</type>
+            <operation>CREATE</operation>
+            <operation>MODIFY</operation>
+
+        </conditions>
+        <steps>
+            <jython>
+                <order>60</order>
+                <description expression="true">"Register Task Definition %s on %s" % (deployed.name, deployed.container.name)</description>
+                <script>ecs/register_task_definition.py</script>
+            </jython>
+            <checkpoint/>
+            <jython>
+                <order>80</order>
+                <description expression="true">"Run Task %s on %s" % (deployed.name, deployed.container.name)</description>
+                <script>ecs/run_task.py</script>
+            </jython>
+            <jython>
+                <order>85</order>
+                <description expression="true">"Check Task %s is Running on %s" % (deployed.name, deployed.container.name)</description>
+                <script>ecs/check_task.py</script>
+            </jython>
+        </steps>
+    </rule>
+    <rule name="aws.ecsTask.DESTROY" scope="deployed">
+        <conditions>
+            <type>aws.ecsTask</type>
+            <operation>DESTROY</operation>
+            <operation>MODIFY</operation>
+        </conditions>
+        <steps>
+            <jython>
+                <order>20</order>
+                <description expression="true">"Stop Task %s from %s" % (previousDeployed.name, previousDeployed.container.name)</description>
+                <script>ecs/stop_task.py</script>
+            </jython>
+            <checkpoint/>
+            <jython>
+                <order>25</order>
+                <description expression="true">"Check Task %s is terminated on %s" % (previousDeployed.name, previousDeployed.container.name)</description>
+                <script>ecs/check_task.py</script>
+            </jython>
+            <jython>
+                <order>40</order>
+                <description expression="true">"DeregisterTask Definition %s from %s" % (previousDeployed.name, previousDeployed.container.name)</description>
+                <script>ecs/deregister_task_definition.py</script>
+            </jython>
+
+        </steps>
+    </rule>
+    <rule name="aws.ecsService.CREATE" scope="deployed">
+        <conditions>
+            <type>aws.ecsTask</type>
+            <operation>CREATE</operation>
+            <operation>MODIFY</operation>
+            <expression>deployed.manageService</expression>
+        </conditions>
+        <steps>
+            <jython>
+                <order>65</order>
+                <description expression="true">"Creating Service %s on %s" % (deployed.name, deployed.container.name)</description>
+                <script>ecs/createService.py</script>
+            </jython>
+            <checkpoint/>
+        </steps>
+    </rule>
+    <rule name="aws.ecsService.DESTROY" scope="deployed">
+        <conditions>
+            <type>aws.ecsTask</type>
+            <operation>DESTROY</operation>
+            <operation>MODIFY</operation>
+            <expression>previousDeployed.manageService</expression>
+        </conditions>
+        <steps>
+            <jython>
+                <order>45</order>
+                <description expression="true">"Removing Service %s from %s" % (previousDeployed.name, previousDeployed.container.name)</description>
+                <script>ecs/deleteService.py</script>
+            </jython>
+            <checkpoint/>
+        </steps>
+    </rule>
 </rules>

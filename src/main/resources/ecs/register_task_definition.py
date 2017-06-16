@@ -7,25 +7,23 @@
 
 from ecs.ecsHelper import ecsHelper
 
-print "Create ECS Task"
-
-print "Access Key : %s" % (deployed.container.AwsKeys.accesskey)
-ecsHelper = ecsHelper(deployed)
-containerDef = ecsHelper.parseContainers( deployed.containerDefinitions )
+print "Register Task Definition ECS Task {0}".format(deployed.name)
 
 deployed.placementConstraints = []
 deployed.taskRoleArn = ""
 deployed.volumes = []
-print containerDef
+ecsHelper = ecsHelper(deployed)
+
 print "volumes : %s" % (deployed.volumes)
 print "networkMode : %s" % (deployed.networkMode)
-print "palcementConstraints : %s" % (deployed.placementConstraints)
+print "placementConstraints : %s" % (deployed.placementConstraints)
 print "family               : %s" % (deployed.family)
 print "task Name            : %s" % (deployed.name)
 print "taskRoleArn          : %s" % (deployed.taskRoleArn)
-response = ecsHelper.createTask(deployed, containerDef )
+
+
+response = ecsHelper.register_task_definition()
 print "====================="
-deployed.revision = response['taskDefinition']['revision']
 print response
 print "Done ECS Task"
 
