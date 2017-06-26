@@ -25,7 +25,6 @@
         <property category="Task" name="region" kind="string" required="true"/>
         <property category="Task" name="taskRoleArn" kind="string" required="false"/>
         <property category="Task" name="networkMode" kind="enum" required="true" default="none">
-
             <enum-values>
                 <value>none</value>
                 <value>bridge</value>
