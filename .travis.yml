@@ -10,7 +10,7 @@ deploy:
   provider: releases
   api_key:
     secure: VBEtSTzXxKRDBLKFjVp/oXfCUPb0o9Sr2Gj5XthQeTd/WSIoqMfNV0ECzaIolNJg8s+nAt6jxNzgQdhIVYFCt/3Oj/9SdFXYhBdIQoH3gXWP2/MFekNgmTOqr6HZBMhtHe64V07/1ArCHXDc+I53Is8yxSBAQod4IGRB+tkZ8KoGbqeK6Z39eHjofPNhON82Hh8E5fAwLWd8Hu3fDgtMm+gpkDugIaJ5HkTaUqeUa/+8BYqinr2Ki9q4xMvwlgrQu+RB0YCKDBd7/l9PFUskkYcJSaxt49a40rHX1p822XNyPz7ipOY8TwRNRNzqdGBQY+FdjHFfHCg+etCyCKNPTu6dUGgqP/c5mBZEstbdYkFXRrmNNIweiM4mxOM58CSPqErLoKLbny3zW57gItaDlzIJCcZP+fROYoPn/Na7lzA+rZm1sqV+KtXYmoQ23HGeuv0I0BfaOoyDotLLVHQLQLSga/a3zaEKN2lBB7sEUg4BKLxj5BD1LiDTC/l13m12DWNIcOwlWop8SI8dtH9zsJoF9Vd6jJ+nUqSl0gZohAKO7cLhzyS2S6OkWxZjVUtVYAQlgtA+thX6vg5IjZsL+ETEw8WkZ1EjvVkDTNngmHH51F1jzkeevyVyWSONsVtigNfqBR7+31Xrdc3t70V6AZx5nJ4fvwNdMRs5ycL3PbU=
-  file: build/distributions/xld-aws-ecs-plugin-1.0.2.xldp
+  file: build/distributions/xld-aws-ecs-plugin-2.0.0.xldp
   skip_cleanup: true
   on:
     tags: true
