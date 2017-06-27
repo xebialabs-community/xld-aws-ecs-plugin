@@ -21,6 +21,9 @@
                 <order>60</order>
                 <description expression="true">"Register Task Definition %s on %s" % (deployed.name, deployed.container.name)</description>
                 <script>ecs/register_task_definition.py</script>
+                <jython-context>
+                    <deployedApplication expression="true">deployedApplication</deployedApplication>
+                </jython-context>
             </jython>
         </steps>
     </rule>
@@ -36,6 +39,9 @@
                 <order>40</order>
                 <description expression="true">"Deregister Task Definition %s from %s" % (previousDeployed.name, previousDeployed.container.name)</description>
                 <script>ecs/deregister_task_definition.py</script>
+                <jython-context>
+                    <previousDeployedApplication expression="true">previousDeployedApplication</previousDeployedApplication>
+                </jython-context>
             </jython>
         </steps>
     </rule>

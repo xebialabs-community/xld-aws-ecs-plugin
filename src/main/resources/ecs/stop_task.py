@@ -8,5 +8,5 @@
 from ecs.ecsHelper import ecsHelper
 
 print "Stop Task ECS Task {0}".format(previousDeployed.name)
-ecsHelper = ecsHelper(previousDeployed)
+ecsHelper = ecsHelper(deployed=previousDeployed, deployed_application=None)
 ecsHelper.stop_task()

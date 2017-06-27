@@ -9,7 +9,7 @@ from ecs.ecsHelper import ecsHelper
 
 print "deregister_task_definition...."
 
-ecsHelper = ecsHelper(previousDeployed)
+ecsHelper = ecsHelper(deployed=previousDeployed, deployed_application=previousDeployedApplication)
 response = ecsHelper.deregister_task_definition()
 print "====================="
 print response

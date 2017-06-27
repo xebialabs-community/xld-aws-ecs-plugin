@@ -9,7 +9,7 @@ from ecs.ecsHelper import ecsHelper
 
 print "Register Task Definition ECS Task {0}".format(deployed.name)
 
-ecsHelper = ecsHelper(deployed)
+ecsHelper = ecsHelper(deployed=deployed, deployed_application=deployedApplication)
 
 print "volumes : %s" % (deployed.volumes)
 print "networkMode : %s" % (deployed.networkMode)
@@ -18,9 +18,7 @@ print "family               : %s" % (deployed.family)
 print "task Name            : %s" % (deployed.name)
 print "taskRoleArn          : %s" % (deployed.taskRoleArn)
 
-
 response = ecsHelper.register_task_definition()
 print "====================="
 print response
 print "Done ECS Task"
-

@@ -8,9 +8,10 @@
 from ecs.ecsHelper import ecsHelper
 
 target_deployed = deployed or previousDeployed
+
 print "Check ECS Task {0}".format(target_deployed.name)
 
-ecsHelper = ecsHelper(target_deployed)
+ecsHelper = ecsHelper(deployed=target_deployed, deployed_application=None)
 
 desired_tasks, nb_tasks = ecsHelper.check_for_tasks_get_desired_status()
 print "{0}/{1}".format(desired_tasks, nb_tasks)
