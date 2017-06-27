@@ -8,6 +8,38 @@
 
 <rules xmlns="http://www.xebialabs.com/xl-deploy/xl-rules">
 
+
+    <rule name="aws.ecs.TaskDefinition.CREATE" scope="deployed">
+        <conditions>
+            <type>aws.ecs.TaskDefinition</type>
+            <operation>CREATE</operation>
+            <operation>MODIFY</operation>
+
+        </conditions>
+        <steps>
+            <jython>
+                <order>60</order>
+                <description expression="true">"Register Task Definition %s on %s" % (deployed.name, deployed.container.name)</description>
+                <script>ecs/register_task_definition.py</script>
+            </jython>
+        </steps>
+    </rule>
+
+    <rule name="aws.ecs.TaskDefinition.DESTROY" scope="deployed">
+        <conditions>
+            <type>aws.ecs.TaskDefinition</type>
+            <operation>DESTROY</operation>
+            <operation>MODIFY</operation>
+        </conditions>
+        <steps>
+            <jython>
+                <order>40</order>
+                <description expression="true">"Deregister Task Definition %s from %s" % (previousDeployed.name, previousDeployed.container.name)</description>
+                <script>ecs/deregister_task_definition.py</script>
+            </jython>
+        </steps>
+    </rule>
+
     <rule name="aws.ecsTask.CREATE" scope="deployed">
         <conditions>
             <type>aws.ecsTask</type>

@@ -9,6 +9,90 @@
            xmlns="http://www.xebialabs.com/deployit/synthetic"
            xsi:schemaLocation="http://www.xebialabs.com/deployit/synthetic synthetic.xsd">
 
+
+    <type type="aws.ecs.TaskDefinition" extends="udm.BaseDeployed" deployable-type="aws.ecs.TaskDefinitionSpec"
+          container-type="aws.Cloud"
+          description="AWS ECS Task Definition">
+        <generate-deployable type="aws.ecs.TaskDefinitionSpec"
+                             extends="udm.BaseDeployable"
+                             description="Specification for an AWS Task Definition."/>
+
+        <property name="family" kind="string" required="true"/>
+
+        <property name="region" kind="string" required="true"/>
+        <property name="taskRoleArn" kind="string" required="false"/>
+
+        <property name="networkMode" kind="enum" required="true" default="none">
+            <enum-values>
+                <value>none</value>
+                <value>bridge</value>
+                <value>host</value>
+            </enum-values>
+        </property>
+        <property name="containerDefinitions" kind="list_of_ci" required="false" referenced-type="aws.ecs.Container" as-containment="true"/>
+        <property name="volumes" kind="list_of_ci" required="false" referenced-type="aws.ecs.Volume" as-containment="true"/>
+        <property name="placementConstraints" kind="string" required="false"/>
+        <property category="Output" name="revision" kind="string" required="false"/>
+    </type>
+
+    <type-modification type="aws.ecs.TaskDefinitionSpec">
+        <property name="containerDefinitions" kind="list_of_ci" required="false" referenced-type="aws.ecs.ContainerSpec" as-containment="true"/>
+        <property name="volumes" kind="list_of_ci" required="false" referenced-type="aws.ecs.VolumeSpec" as-containment="true"/>
+    </type-modification>
+
+    <type type="aws.ecs.Container" deployable-type="aws.ecs.ContainerSpec" container-type="aws.ecs.TaskDefinition" extends="udm.BaseEmbeddedDeployed" description="Container.">
+        <generate-deployable type="aws.ecs.ContainerSpec" extends="udm.BaseEmbeddedDeployable"/>
+        <property name="image" required="true" kind="string"/>
+        <property name="cpu" required="false" kind="integer"/>
+        <property name="memory" required="true" kind="integer" default="128"/>
+        <property name="memoryReservation" required="false" kind="integer"/>
+        <property name="links" required="false" kind="set_of_string"/>
+        <property name="portMappings" required="false" kind="list_of_ci" referenced-type="aws.ecs.Port" as-containment="true"/>
+        <property name="mountPoints" required="false" kind="list_of_ci" referenced-type="aws.ecs.MountPoint" as-containment="true"/>
+        <property name="environment" required="false" kind="map_string_string"/>
+        <property name="essential" required="true" kind="string" default="true"/>
+        <property name="volumesFrom" required="false" kind="string"/>
+        <property name="hostname" required="false" kind="string"/>
+        <property name="user" required="false" kind="string"/>
+        <property name="workingDirectory" required="false" kind="string"/>
+        <property name="extraHosts" required="false" kind="string"/>
+        <property name="logConfiguration" required="false" kind="string"/>
+        <property name="ulimits" required="false" kind="string"/>
+        <property name="dockerLabels" required="false" kind="string"/>
+    </type>
+
+    <type-modification type="aws.ecs.ContainerSpec">
+        <property name="portMappings" kind="list_of_ci" required="false" referenced-type="aws.ecs.PortSpec" as-containment="true"/>
+        <property name="mountPoints" kind="list_of_ci" required="false" referenced-type="aws.ecs.MountPointSpec" as-containment="true"/>
+    </type-modification>
+
+
+    <type type="aws.ecs.Port" deployable-type="aws.ecs.PortSpec" extends="udm.BaseEmbeddedDeployed" container-type="aws.ecs.Container" description="Port binding.">
+        <generate-deployable type="aws.ecs.PortSpec" extends="udm.BaseEmbeddedDeployable" description="Specification for a Docker port binding."/>
+        <property name="hostPort" required="true" kind="integer" description="Port number of Docker host."/>
+        <property name="containerPort" required="true" kind="integer" description="Port number of Docker container."/>
+        <property name="protocol" default="tcp" required="false" description="Protocol used by the specified port binding. For example: udp or tcp"/>
+    </type>
+
+    <type type="aws.ecs.Volume" deployable-type="aws.ecs.VolumeSpec" extends="udm.BaseEmbeddedDeployed" container-type="aws.ecs.TaskDefinition" description="A volume.">
+        <generate-deployable type="aws.ecs.VolumeSpec" extends="udm.BaseEmbeddedDeployable"/>
+        <property name="host" required="true"/>
+        <property name="sourcePath" required="true" kind="list_of_string"/>
+    </type>
+
+    <type type="aws.ecs.MountPoint" deployable-type="aws.ecs.MountPointSpec" extends="udm.BaseEmbeddedDeployed" container-type="aws.ecs.Container" description="A volume.">
+        <generate-deployable type="aws.ecs.MountPointSpec" extends="udm.BaseEmbeddedDeployable"/>
+        <property name="sourceVolume" required="true" kind="string"/>
+        <property name="containerPath" required="true" kind="string"/>
+        <property name="readOnly" required="true" kind="boolean" default="false"/>
+    </type>
+
+
+    <type type="aws.ecs.Cluster" extends="udm.BaseContainer">
+        <property name="AwsKeys" kind="ci" referenced-type="aws.Cloud" as-containment="true"/>
+    </type>
+
+
     <!--
     #########################################################
     #  ECS Functions
@@ -43,7 +127,7 @@
         <property category="Service" name="desiredCount" kind="integer" required="true" default="0"/>
         <property category="Service" name="minimumHealthyPercent" kind="integer" required="true" default="50"/>
         <property category="Service" name="maximumPercent" kind="integer" required="true" default="200"/>
-        <property category="Output" name="taskIds" kind="list_of_string" required="false" />
+        <property category="Output" name="taskIds" kind="list_of_string" required="false"/>
     </type>
 
     <type-modification type="aws.ecsTaskSpec">

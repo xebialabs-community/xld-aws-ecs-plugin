@@ -17,8 +17,15 @@ class ecsHelper(object):
         botocore_session.lazy_register_component('data_loader',
                                                  lambda: commons.create_loader())
 
-        self.session = Session(aws_access_key_id=deployed.container.AwsKeys.accesskey,
-                               aws_secret_access_key=deployed.container.AwsKeys.accessSecret,
+        print "deployed.container.type  %s" % deployed.container.type
+        if deployed.container.type == "aws.Cloud":
+            aws_keys_container = deployed.container
+        else:
+            aws_keys_container = deployed.container.AwsKeys
+
+        print aws_keys_container
+        self.session = Session(aws_access_key_id=aws_keys_container.accesskey,
+                               aws_secret_access_key=aws_keys_container.accessSecret,
                                botocore_session=botocore_session)
 
         if hasattr(self.deployed, 'region') and self.deployed.region is not None:
@@ -60,13 +67,13 @@ class ecsHelper(object):
             if len(port_mappings) > 0:
                 ecs_container['port_mappings'] = port_mappings
 
-            mount_point = []
-            for mount in container.MountPoint:
-                mount_point.append({'sourceVolume': mount.sourceVolume, 'containerPath': mount.containerPath,
+            mount_points = []
+            for mount in container.mountPoints:
+                mount_points.append({'sourceVolume': mount.sourceVolume, 'containerPath': mount.containerPath,
                                     'readOnly': mount.readOnly})
 
-            if len(mount_point) > 0:
-                ecs_container['mount_point'] = mount_point
+            if len(mount_points) > 0:
+                ecs_container['mount_point'] = mount_points
 
             ecs_containers.append(ecs_container)
 
