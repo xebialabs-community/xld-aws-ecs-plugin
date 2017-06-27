@@ -11,19 +11,19 @@ from botocore.session import Session as BotocoreSession
 
 
 class ecsHelper(object):
-    def __init__(self, deployed):
+    def __init__(self, deployed, deployed_application=None):
         self.deployed = deployed
+        self.deployed_application = deployed_application
+
         botocore_session = BotocoreSession()
         botocore_session.lazy_register_component('data_loader',
                                                  lambda: commons.create_loader())
 
-        print "deployed.container.type  %s" % deployed.container.type
         if deployed.container.type == "aws.Cloud":
             aws_keys_container = deployed.container
         else:
             aws_keys_container = deployed.container.AwsKeys
 
-        print aws_keys_container
         self.session = Session(aws_access_key_id=aws_keys_container.accesskey,
                                aws_secret_access_key=aws_keys_container.accessSecret,
                                botocore_session=botocore_session)
@@ -70,7 +70,7 @@ class ecsHelper(object):
             mount_points = []
             for mount in container.mountPoints:
                 mount_points.append({'sourceVolume': mount.sourceVolume, 'containerPath': mount.containerPath,
-                                    'readOnly': mount.readOnly})
+                                     'readOnly': mount.readOnly})
 
             if len(mount_points) > 0:
                 ecs_container['mount_point'] = mount_points
@@ -79,22 +79,37 @@ class ecsHelper(object):
 
         return ecs_containers
 
+    def find_task_definition(self, task_definition_name):
+        print "find_task_definition {0}".format(task_definition_name)
+        result = [deployed for deployed in self.deployed_application.deployeds if
+                  deployed.type == "aws.ecs.TaskDefinition" and deployed.name == task_definition_name]
+
+        if len(result) == 0:
+            raise Exception("task definition {0} not found".format(task_definition_name))
+
+        if len(result) > 1:
+            raise Exception(
+                "too many results [{1}] found for task definition {0} ".format(task_definition_name, len(result)))
+
+        return result[0]
+
     def register_task_definition(self):
         container_definitions = self.ecs_containers()
         response = self.ecs_client.register_task_definition(family=self.deployed.family,
                                                             networkMode=self.deployed.networkMode,
                                                             taskRoleArn=self.deployed.taskRoleArn,
-                                                            placementConstraints=self.deployed.placementConstraints,
+                                                            placementConstraints=self.deployed.placementConstraints or [],
                                                             volumes=self.deployed.volumes,
                                                             containerDefinitions=container_definitions)
-
         self.deployed.revision = response['taskDefinition']['revision']
         return response
 
     def run_task(self):
+        task_definition = self.task_definition()
+        print "Run task using {0} task definition.".format(task_definition)
         response = self.ecs_client.run_task(cluster=self.cluster(),
                                             taskDefinition=self.task_definition(),
-                                            count=self.deployed.taskCount,
+                                            count=self.deployed.taskCount
                                             )
         if len(response['failures']) > 0:
             print "Error(s) found"
@@ -140,7 +155,13 @@ class ecsHelper(object):
         return response
 
     def task_definition(self):
-        return "{0}:{1}".format(self.deployed.family, self.deployed.revision)
+        if self.deployed.type == "aws.ecs.Task":
+            task_definition_name = self.deployed.taskDefinitionName
+            task_definition = self.find_task_definition(task_definition_name)
+        else:
+            task_definition = self.deployed
+
+        return "{0}:{1}".format(task_definition.family, task_definition.revision)
 
     def cluster(self):
         return self.deployed.container.name

@@ -9,7 +9,7 @@ from ecs.ecsHelper import ecsHelper
 
 print "Run Task ECS Task {0}".format(deployed.name)
 
-ecsHelper = ecsHelper(deployed)
+ecsHelper = ecsHelper(deployed=deployed, deployed_application=deployedApplication)
 
 print "Start %s tasks........ " % deployed.taskCount
 

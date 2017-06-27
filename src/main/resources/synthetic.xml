@@ -18,10 +18,8 @@
                              description="Specification for an AWS Task Definition."/>
 
         <property name="family" kind="string" required="true"/>
-
         <property name="region" kind="string" required="true"/>
-        <property name="taskRoleArn" kind="string" required="false"/>
-
+        <property name="taskRoleArn" kind="string" required="false" default=""/>
         <property name="networkMode" kind="enum" required="true" default="none">
             <enum-values>
                 <value>none</value>
@@ -90,6 +88,19 @@
 
     <type type="aws.ecs.Cluster" extends="udm.BaseContainer">
         <property name="AwsKeys" kind="ci" referenced-type="aws.Cloud" as-containment="true"/>
+    </type>
+
+
+    <type type="aws.ecs.Task" extends="udm.BaseDeployed" deployable-type="aws.ecs.TaskSpec"
+          container-type="aws.ecs.Cluster"
+          description="AWS ECS Task">
+        <generate-deployable type="aws.ecs.TaskSpec"
+                             extends="udm.BaseDeployable"
+                             description="Specification for an AWS Task."/>
+        <property name="taskCount" kind="integer" required="true" default="1"/>
+        <property name="taskDefinitionName" kind="string" required="true"/>
+        <property name="region" kind="string" required="true"/>
+        <property category="Output" name="taskIds" kind="list_of_string" required="false"/>
     </type>
 
 

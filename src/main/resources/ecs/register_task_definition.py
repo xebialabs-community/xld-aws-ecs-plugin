@@ -9,9 +9,6 @@ from ecs.ecsHelper import ecsHelper
 
 print "Register Task Definition ECS Task {0}".format(deployed.name)
 
-deployed.placementConstraints = []
-deployed.taskRoleArn = ""
-deployed.volumes = []
 ecsHelper = ecsHelper(deployed)
 
 print "volumes : %s" % (deployed.volumes)
