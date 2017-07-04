@@ -155,7 +155,7 @@ class ecsHelper(object):
         return response
 
     def task_definition(self):
-        if self.deployed.type == "aws.ecs.Task":
+        if self.deployed.type == "aws.ecs.Task" or self.deployed.type == "aws.ecs.Service":
             task_definition_name = self.deployed.taskDefinitionName
             task_definition = self.find_task_definition(task_definition_name)
         else:
@@ -165,6 +165,9 @@ class ecsHelper(object):
 
     def cluster(self):
         return self.deployed.container.name
+
+    def service_name(self):
+        return self.deployed.serviceName or self.deployed.name
 
     def createService(self, deployed, taskDefinition, container_name, container_port):
         oneLB = {'loadBalancerName': deployed.loadbalancerName,
@@ -189,4 +192,42 @@ class ecsHelper(object):
         print response
         response = self.ecs_client.delete_service(cluster=previousDeployed.container.name,
                                                   service=previousDeployed.serviceName)
+        return response
+
+    def create_service(self):
+        task_definition = self.task_definition()
+        print "Create a service using {0} as task definition.".format(task_definition)
+        response = self.ecs_client.create_service(cluster=self.cluster(),
+                                                  serviceName=self.service_name(),
+                                                  taskDefinition=task_definition,
+                                                  desiredCount=int(self.deployed.count),
+                                                  )
+        print response
+        return response
+
+    def check_service_desired_status(self):
+        response = self.ecs_client.describe_services(cluster=self.cluster(),
+                                                     services=[self.service_name()])
+        print response
+        service_info = response['services'][0]
+        print "{serviceName} {status} {desiredCount} : {pendingCount}/{runningCount}".format(**service_info)
+        return service_info['pendingCount'], service_info['runningCount']
+
+    def stop_service(self):
+        task_definition = self.task_definition()
+        print "Update a service using {0} as task definition with 0 count.".format(task_definition)
+        response = self.ecs_client.update_service(cluster=self.cluster(),
+                                                  service=self.service_name(),
+                                                  taskDefinition=task_definition,
+                                                  desiredCount=int(0),
+                                                  )
+        print response
+        return response
+
+    def delete_service(self):
+        print "Delete a service {0}.".format(self.service_name())
+        response = self.ecs_client.delete_service(cluster=self.cluster(),
+                                                  service=self.service_name(),
+                                                  )
+        print response
         return response

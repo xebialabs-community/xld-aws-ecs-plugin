@@ -51,7 +51,6 @@
             <type>aws.ecs.Task</type>
             <operation>CREATE</operation>
             <operation>MODIFY</operation>
-
         </conditions>
         <steps>
             <jython>
@@ -92,6 +91,65 @@
             </jython>
         </steps>
     </rule>
+
+
+
+    <rule name="aws.ecs.Service.CREATE" scope="deployed">
+        <conditions>
+            <type>aws.ecs.Service</type>
+            <operation>CREATE</operation>
+            <operation>MODIFY</operation>
+        </conditions>
+        <steps>
+            <jython>
+                <order>81</order>
+                <description expression="true">"Create Service %s on %s" % (deployed.name, deployed.container.name)</description>
+                <script>ecs/create_service.py</script>
+                <jython-context>
+                    <deployedApplication expression="true">deployedApplication</deployedApplication>
+                </jython-context>
+            </jython>
+            <checkpoint/>
+            <jython>
+                <order>86</order>
+                <description expression="true">"Check Service %s is Running on %s" % (deployed.name, deployed.container.name)</description>
+                <script>ecs/check_service_start.py</script>
+            </jython>
+        </steps>
+    </rule>
+
+
+    <rule name="aws.ecs.Service.DESTROY" scope="deployed">
+        <conditions>
+            <type>aws.ecs.Service</type>
+            <operation>DESTROY</operation>
+            <operation>MODIFY</operation>
+        </conditions>
+        <steps>
+            <jython>
+                <order>20</order>
+                <description expression="true">"Stop service %s from %s" % (previousDeployed.name, previousDeployed.container.name)</description>
+                <script>ecs/stop_service.py</script>
+                <jython-context>
+                    <previousDeployedApplication expression="true">previousDeployedApplication</previousDeployedApplication>
+                </jython-context>
+            </jython>
+            <jython>
+                <order>21</order>
+                <description expression="true">"Check Service %s is stopped on %s" % (previousDeployed.name, previousDeployed.container.name)</description>
+                <script>ecs/check_service_stop.py</script>
+            </jython>
+            <jython>
+                <order>25</order>
+                <description expression="true">"Delete service %s from %s" % (previousDeployed.name, previousDeployed.container.name)</description>
+                <script>ecs/delete_service.py</script>
+                <jython-context>
+                    <previousDeployedApplication expression="true">previousDeployedApplication</previousDeployedApplication>
+                </jython-context>
+            </jython>
+        </steps>
+    </rule>
+
     <!--- - -->
 
     <rule name="aws.ecsTask.CREATE" scope="deployed">

@@ -104,6 +104,21 @@
     </type>
 
 
+
+    <type type="aws.ecs.Service" extends="udm.BaseDeployed" deployable-type="aws.ecs.ServiceSpec"
+          container-type="aws.ecs.Cluster"
+          description="AWS ECS Service">
+        <generate-deployable type="aws.ecs.ServiceSpec"
+                             extends="udm.BaseDeployable"
+                             description="Specification for an AWS Task."/>
+        <property name="serviceName" required="false"/>
+        <property name="taskDefinitionName" kind="string" required="true" description="The family and revision (family:revision ) or full Amazon Resource Name (ARN) of the task definition to run in your service. If a revision is not specified, the latest ACTIVE revision is used."/>
+        <property name="count" required="true" default="1" />
+        <property name="region" kind="string" required="true"/>
+        <property category="Output" name="deploymentsIds" kind="list_of_string" required="false"/>
+    </type>
+
+
     <!--
     #########################################################
     #  ECS Functions
